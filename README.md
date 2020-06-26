@@ -90,6 +90,16 @@ class SSD():
 
 ### 3. Preprocess Image
 
+```
+def pre_process(self, frame):
+    frame = cv2.resize(frame, (300, 300))
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame = frame.transpose((2, 0, 1)).astype(np.float32)
+    frame *= (2.0/255.0)
+    frame -= 1.0
+    return frame
+```
+
 ### 4. Inference
 
 ### 5. Postprocess Image
