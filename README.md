@@ -1,18 +1,19 @@
 # Realtime SSD Object Detection
 
-> Asynchronous TensorRT execution for realtime inference
+> Gstreamer, Opencv, Tensort camera pipeline
 
 ## Materials
 
-1. Jetson hardware with camera attachment. See the previous article for details on how to build.
+1. Jetson hardware with camera CSI attachment. See the [previous article](https://seanavery.github.io/jetson-nano-box/#/) for details on how to build.
+2. Need to have OpenCV installed. See [instructions](https://jkjung-avt.github.io/opencv-on-nano/) from  JK Jung's blog.
 
 ## Procedure
 
-### 0. Convert Onnx Model to TensorRT Engine
+The goal for this blog post, is to write the "hello world" of computer vision. In other workds we get some object detection neural net running and visualize results.
 
-### 1. GStreamer OpenCV Camera Capture
+### 0. GStreamer OpenCV Camera Capture
 
-We can write a simple python script to feed a GStreamer pipeline into a `cv2::VideoCapture` object.
+We can write a simple python script to feed a GStreamer pipeline into a `cv2::VideoCapture` object. First [nvarguscamerasrc]() is used for camera bringup and to set the `whitebalance` mode to auto. Then the frame is flipped 180 degrees and formatted as BGR for Opencv [VideoCapture]() ingestion. 
 
 ```
 import time
@@ -44,6 +45,8 @@ def stream_camera():
 if __name__ == "__main__":
     stream_camera()
 ```
+
+As you can see from the gif above, the whitebalance and auto exposure works quite well on the Sony IMX219. I have a lamp off to the side in a somewhat dark room, purposefully less than ideal. The white balance and expose adjust over a few second timeframe. 
 
 ### 2. Initialize TensorRT Engine
 
@@ -101,6 +104,9 @@ def pre_process(self, frame):
 ```
 
 ### 4. Inference
+
+def infer(self, frame):
+
 
 ### 5. Postprocess Image
 
