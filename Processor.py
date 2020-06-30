@@ -60,12 +60,13 @@ class Processor():
 
     def pre_process(self, frame):
         # convert to 300 * 300
-        # TODO: check if hardware accelerated
         frame = cv2.resize(frame, (300, 300))
-        # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        # frame = frame.transpose((0, 2, 1)).astype(np.float32)
-        # frame *= (2.0/255.0)
-        # frame -= 1.0
+
+        # normalize tensor
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = frame.transpose((2, 0, 1)).astype(np.float32)
+        frame *= (2.0/255.0)
+        frame -= 1.0
 
         return frame
    
