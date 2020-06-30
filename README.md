@@ -107,10 +107,35 @@ def pre_process(self, frame):
 
 ### 4. Inference
 
-def infer(self, frame):
+First, copy the flattend image as a 1d tensor into cuda memory using the `memcpy_htod_async` function. Then execute inference with a batch size of 1 since we are feeding in one frame at a time. Lastly, we will need to copy the output tensor back from the GPU to the Host so we can use the CPU to post-process.
 
+```
+def infer(self, frame):
+    np.copyto(self.host_inputs[0], frame)
+
+    # copy buffer into cuda, serialize via stream
+    cuda.memcpy_htod_async(
+        self.cuda_inputs[0], self.host_inputs[0], self.stream)
+    pre_end = time.time()
+
+    # execute inference async
+    self.context.execute_async(
+        batch_size=1,
+        bindings=self.bindings, # input/output buffer addresses
+        stream_handle=self.stream.handle)
+    cuda.memcpy_dtoh_async(
+        self.host_outputs[1], self.cuda_outputs[1], self.stream)
+    cuda.memcpy_dtoh_async(
+        self.host_outputs[0], self.cuda_outputs[0], self.stream)
+
+    self.stream.synchronize()
+    output = self.host_outputs[0]
+```
 
 ### 5. Postprocess Image
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
 ### 6. Draw Boxes and Visualize Results
 
