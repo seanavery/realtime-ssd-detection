@@ -1,4 +1,4 @@
-# Realtime SSD Object Detection
+# Real-time SSD Object Detection
 
 > Gstreamer, Opencv, Tensort camera pipeline
 
@@ -9,7 +9,7 @@
 
 ## Procedure
 
-The goal for this blog post, is to write the "hello world" of computer vision. In other workds we get some object detection neural net running and visualize results.
+The goal for this blog post, is to write the "hello world" of computer vision. In other workds, get some object detection neural net running and visualize results.
 
 ### 0. GStreamer OpenCV Camera Capture
 
@@ -49,6 +49,10 @@ if __name__ == "__main__":
 As you can see from the gif above, the whitebalance and auto exposure works quite well on the Sony IMX219. I have a lamp off to the side in a somewhat dark room, purposefully less than ideal. The white balance and expose adjust over a few second timeframe. 
 
 ### 2. Initialize TensorRT Engine
+
+For now we will skip the process of converting the [model](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md#coco-trained-models) from Tensorflow's Model Zoo into TensorRT. All we need to do is load up the `trt` engine and initialize the GPU memory using [pycuda](https://documen.tician.de/pycuda/). 
+
+The model has been loaded with [graph-surgeon](https://github.com/jkjung-avt/tensorrt_demos/blob/master/ssd/build_engine.py) plugins to make the model compatible with TensorRT layers specification. You need to first regsiter the plugins with `libnvinfer`. The next step is to load up the trt file and allocate `GPU` and `Host` memory for input/output layers.
 
 ```
 import tensorrt as trt
