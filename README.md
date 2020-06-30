@@ -141,10 +141,30 @@ def infer(self, frame):
 ```
 
 ### 5. Postprocess Image
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+The output tensor is flat with results seperated by 7 `(cls, conf, x1, y1, x2, y2)`. We simply ned to iterate through the tensor and filter out boxes that are less then a defined confidence threshold `[0, 1]`.
+
+```
+def post_process(self, frame, output, confidence_threshold):
+    img_h, img_w, _ = frame.shape
+    boxes, confs, clss = [], [], []
+    for prefix in range(0, len(output), 7):
+        confidence = float(output[prefix+2])
+        if confidence < confidence_threshold:
+            continue
+        x1 = int(output[prefix+3] * img_w)
+        y1 = int(output[prefix+4] * img_h)
+        x2 = int(output[prefix+5] * img_w)
+        y2 = int(output[prefix+6] * img_h)
+        cls = int(output[prefix+1])
+        boxes.append((x1, y1, x2,  y2))
+        confs.append(confidence)
+        clss.append(cls)
+    return boxes, confs, clss
+```
 
 ### 6. Draw Boxes and Visualize Results
+
+
 
 ## Conclusion
