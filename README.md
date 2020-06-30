@@ -97,12 +97,20 @@ class SSD():
 
 ### 3. Preprocess Image
 
-The SSD model is based on the [Coco Dataset](https://cocodataset.org/) which expects incoming images to be of shape `(300, 300, 3)`. First we need to resize the incoming (1920, 1080, 3), then we returned the flattened image of size (270000). Keep in mind that these numpy functions are not yet hardware optimized.
+This SSD model uses [mobilenet-v2]() and is trained on the [Coco Dataset](https://cocodataset.org/) which expects incoming images to be of shape `(300, 300, 3)`. First we need to resize the incoming `(1920, 1080, 3)`, Lastley, return the flattened image of size (270000).  We also need to normalize th input matrix to values between `[0, -1]`. Keep in mind that these numpy functions are not yet hardware optimized.
 
 ```
 def pre_process(self, frame):
+    # convert to 300 * 300
     frame = cv2.resize(frame, (300, 300))
-    return frame.ravel()
+
+    # normalize tensor
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame = frame.transpose((2, 0, 1)).astype(np.float32)
+    frame *= (2.0/255.0)
+    frame -= 1.0
+
+    return frame
 ```
 
 ### 4. Inference
