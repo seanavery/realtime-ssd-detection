@@ -51,12 +51,27 @@ class Processor():
         del self.stream
 
     def detect(self, frame):
-        pre_start = time.time()
         # 1. pre-process image
         resized = self.pre_process(frame)
+        # 2. inference
+        output = self.infer(resized)
+        # 3. post process output
+        return self.post_process(frame, output, confidence_threshold=0.3)
 
+    def pre_process(self, frame):
+        # convert to 300 * 300
+        # TODO: check if hardware accelerated
+        frame = cv2.resize(frame, (300, 300))
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = frame.transpose((2, 0, 1)).astype(np.float32)
+        frame *= (2.0/255.0)
+        frame -= 1.0
+
+        return frame
+   
+    def infer(self, frame):
         # flatten np image
-        np.copyto(self.host_inputs[0], resized.ravel()) 
+        np.copyto(self.host_inputs[0], frame.ravel()) 
 
         # copy buffer into cuda, serialize via stream
         cuda.memcpy_htod_async(
@@ -76,22 +91,7 @@ class Processor():
         self.stream.synchronize()
         output = self.host_outputs[0]
 
-        # post process output
-        return self.post_process(frame, output, confidence_threshold=0.3)
-
-    def pre_process(self, frame):
-        # convert to 300 * 300
-        # TODO: check if hardware accelerated
-        frame = cv2.resize(frame, (300, 300))
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = frame.transpose((2, 0, 1)).astype(np.float32)
-        frame *= (2.0/255.0)
-        frame -= 1.0
-
-        return frame
-   
-    def infer(self, frame):
-        return True
+        return output
 
     def post_process(self, frame, output, confidence_threshold):
         img_h, img_w, _ = frame.shape
