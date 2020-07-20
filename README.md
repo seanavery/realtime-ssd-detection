@@ -9,10 +9,10 @@
 
 hello world ml...
 
--[x] GStreamer OpenCV Camera Capture
--[x] Initialize TensorRT Engine
--[x] 3. Preprocess Image
--[x] 4. Inference
--[x] 5. Postprocess Image
--[x] 6. Draw Boxes and Visualize Results
+- [x] GStreamer OpenCV Camera Capture
+- [x] Initialize TensorRT Engine
+- [x] 3. Preprocess Image
+- [x] 4. Inference
+- [x] 5. Postprocess Image
+- [x] 6. Draw Boxes and Visualize Results
 
